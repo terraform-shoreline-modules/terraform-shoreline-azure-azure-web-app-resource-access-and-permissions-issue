@@ -1,0 +1,154 @@
+{
+  "name": "azure_web_app_resource_access_and_permissions_issue",
+  "description": "The incident type \"Azure Web App Resource Access and Permissions Issue\" refers to the situation where a web application hosted on the Azure platform is unable to access external resources or databases. This can occur due to incorrect connection string settings or access control settings. It is recommended to review the connection strings and access control settings, as well as check the network security group rules if the app is accessing Azure resources. Additionally, it is suggested to check the service connectors and web app networking settings to identify and resolve the issue.",
+  "params": [
+    {
+      "name": "APP_NAME",
+      "value": ""
+    },
+    {
+      "name": "RESOURCE_GROUP",
+      "value": ""
+    },
+    {
+      "name": "CONNECTION_NAME",
+      "value": ""
+    },
+    {
+      "name": "DATABASE_NAME",
+      "value": ""
+    },
+    {
+      "name": "NSG_RULE_NAME",
+      "value": ""
+    },
+    {
+      "name": "SERVER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NSG_NAME",
+      "value": ""
+    },
+    {
+      "name": "SECRET",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Azure Web App Resource Access and Permissions Issue\nThe incident type \"Azure Web App Resource Access and Permissions Issue\" refers to the situation where a web application hosted on the Azure platform is unable to access external resources or databases. This can occur due to incorrect connection string settings or access control settings. It is recommended to review the connection strings and access control settings, as well as check the network security group rules if the app is accessing Azure resources. Additionally, it is suggested to check the service connectors and web app networking settings to identify and resolve the issue."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the web app's connection strings"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp config connection-string list -g ${RESOURCE_GROUP} -n ${APP_NAME}`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the web app's access control settings"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp identity show -g ${RESOURCE_GROUP} -n ${APP_NAME}`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## List web app connection"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp connection list -g ${RESOURCE_GROUP} -n ${APP_NAME}`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## List web app's connection source configuration"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp connection list-configuration -g ${RESOURCE_GROUP} -n ${APP_NAME} --connection ${CONNECTION_NAME}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check web app networking settings"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp show -g ${RESOURCE_GROUP} -n ${APP_NAME} --query outboundIpAddresses`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## List the network security group"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az network nsg rule list --nsg-name ${NSG_NAME} --resource-group ${RESOURCE_GROUP}`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check network security group rules"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az network nsg rule show --resource-group ${RESOURCE_GROUP_NAME} --nsg-name ${NSG_NAME} --name ${NSG_RULE_NAME}`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Create connection between webapp and database."
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_create_webapp_sql_conn($APP_NAME, $RESOURCE_GROUP, $DATABASE_NAME, $SERVER_NAME, $SECRET)"
+    }
+  ]
+}
